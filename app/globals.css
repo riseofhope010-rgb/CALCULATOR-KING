@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans antialiased;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl shadow-md p-6 border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-surface;
+  }
+
+  .input-field {
+    @apply rounded-lg border-2 border-gray-300 dark:border-gray-600 focus:border-primary focus:ring-2 focus:ring-primary/20 p-3 w-full text-base bg-white dark:bg-dark-surface text-gray-900 dark:text-white outline-none transition-all duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-700 text-white rounded-lg px-6 py-3 font-semibold transition-all duration-200 hover:shadow-lg;
+  }
+
+  .btn-secondary {
+    @apply border-2 border-primary text-primary hover:bg-primary-50 dark:hover:bg-primary/10 rounded-lg px-6 py-3 font-semibold transition-all duration-200;
+  }
+
+  .results-card {
+    @apply bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-8 border-2 border-blue-200 dark:border-blue-800;
+  }
+
+  .section-title {
+    @apply text-2xl font-bold text-gray-900 dark:text-white mb-4;
+  }
+
+  .section-subtitle {
+    @apply text-lg text-gray-600 dark:text-gray-300 mb-6;
+  }
+}
+
+@layer utilities {
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-102;
+  }
+}
