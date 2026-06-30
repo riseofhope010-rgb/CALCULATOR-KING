@@ -127,14 +127,14 @@ export default function LoanEMIPage() {
         "Compare different tenures to find your best option.",
       ]}
       faqItems={[
-        { question: 'What is EMI?', answer: 'EMI stands for Equated Monthly Installment—a fixed payment combining principal and interest. Each payment reduces your loan balance progressively. Initially, payments go mostly toward interest; over time, more goes to principal.' },
-        { question: 'How can I reduce my EMI?', answer: 'Increase your loan tenure for lower monthly payments (but more total interest). Make a larger down payment to reduce principal. Negotiate a lower interest rate. Prepay when possible to reduce future interest.' },
-        { question: 'Should I choose a shorter or longer tenure?', answer: 'Shorter tenure = higher EMI but less total interest. Longer tenure = lower EMI but more interest. Choose based on your monthly budget. If you can afford the higher EMI, shorter is usually better.' },
-        { question: 'What happens if I prepay?', answer: 'Prepayments reduce your principal and can lower future EMIs or shorten your loan. Most lenders allow prepayment, but check for prepayment penalties. Even small extra payments save significant interest.' },
-        { question: 'How is EMI calculated?', answer: 'EMI uses the formula: EMI = P × r × (1+r)^n / ((1+r)^n - 1), where P is principal, r is monthly interest rate, and n is number of months. This ensures equal payments while fully amortizing the loan.' },
-        { question: 'What about processing fees and other charges?', answer: 'This calculator shows EMI based on principal and interest only. Processing fees, documentation charges, insurance, and other fees increase your effective cost. Add these to principal for true total cost.' },
-        { question: 'Does EMI change over time?', answer: 'For fixed-rate loans, EMI stays constant throughout the tenure. For floating-rate loans, EMI can change with interest rate changes. Fixed-rate provides payment certainty; floating can be beneficial if rates decrease.' },
-        { question: 'What if I miss an EMI payment?', answer: 'Missing payments results in late fees and potential default. It affects your credit score and may lead to repossession (for secured loans). Always contact your lender if struggling—they may offer restructuring options.' },
+        { question: "What is EMI?", answer: "EMI stands for Equated Monthly Installment—a fixed payment combining principal and interest. Each payment reduces your loan balance progressively. Initially, payments go mostly toward interest; over time, more goes to principal." },
+        { question: "How can I reduce my EMI?", answer: "Increase your loan tenure for lower monthly payments (but more total interest). Make a larger down payment to reduce principal. Negotiate a lower interest rate. Prepay when possible to reduce future interest." },
+        { question: "Should I choose a shorter or longer tenure?", answer: "Shorter tenure = higher EMI but less total interest. Longer tenure = lower EMI but more interest. Choose based on your monthly budget. If you can afford the higher EMI, shorter is usually better." },
+        { question: "What happens if I prepay?", answer: "Prepayments reduce your principal and can lower future EMIs or shorten your loan. Most lenders allow prepayment, but check for prepayment penalties. Even small extra payments save significant interest." },
+        { question: "How is EMI calculated?", answer: "EMI uses the formula: EMI = P × r × (1+r)^n / ((1+r)^n - 1), where P is principal, r is monthly interest rate, and n is number of months. This ensures equal payments while fully amortizing the loan." },
+        { question: "What about processing fees and other charges?", answer: "This calculator shows EMI based on principal and interest only. Processing fees, documentation charges, insurance, and other fees increase your effective cost. Add these to principal for true total cost." },
+        { question: "Does EMI change over time?", answer: "For fixed-rate loans, EMI stays constant throughout the tenure. For floating-rate loans, EMI can change with interest rate changes. Fixed-rate provides payment certainty; floating can be beneficial if rates decrease." },
+        { question: "What if I miss an EMI payment?", answer: "Missing payments results in late fees and potential default. It affects your credit score and may lead to repossession (for secured loans). Always contact your lender if struggling—they may offer restructuring options." },
       ]}
     />
   )

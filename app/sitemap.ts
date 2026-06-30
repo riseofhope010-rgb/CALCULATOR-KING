@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
-import locationsData from './data/locations.json'
-import rolesData from './data/roles.json'
+import locationsData from '@/data/locations.json'
+import rolesData from '@/data/roles.json'
 
 const CALCULATORS = [
   { id: 'salary', name: 'Salary Calculator', priority: 0.9 },

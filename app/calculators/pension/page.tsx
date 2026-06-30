@@ -22,7 +22,7 @@ export default function PensionCalculatorPage() {
     setResults(calculated)
   }, [inputs])
 
-  const handleInputChange = (field: keyof PensionInput, value: string | number) => {
+  const handleInputChange = (field: keyof PensionInput, value: string | number | boolean) => {
     setInputs(prev => ({
       ...prev,
       [field]: typeof value === 'string' ? parseFloat(value) || 0 : value,
@@ -178,14 +178,14 @@ export default function PensionCalculatorPage() {
         "Include survivor benefit option if you want coverage for your spouse.",
       ]}
       faqItems={[
-        { question: 'How is pension calculated?', answer: 'Most defined benefit pensions use a formula: Years of Service × Multiplier × Average Salary. For example, 30 years × 1.5% × $80,000 = $36,000 annual pension. Some plans use final salary, others average highest years.' },
-        { question: 'What is vesting?', answer: 'Vesting means you have earned the right to your pension. Plans typically require 5-7 years for full vesting. If you leave before vesting, you may lose pension benefits. Vested benefits are yours even if you leave the employer.' },
-        { question: 'What is a survivor benefit?', answer: 'A survivor (joint and survivor) benefit provides continued payments to your spouse after your death. It typically reduces your monthly pension by 10-15% but ensures your spouse receives a percentage (often 50-75%) of your benefit.' },
-        { question: 'What is a typical pension multiplier?', answer: 'Multipliers vary widely: private sector often 1.0-1.5%, public sector (teachers, police, government) often 2.0-2.5%. Higher multipliers mean larger pensions but are less common in today's landscape.' },
-        { question: 'How does early retirement affect my pension?', answer: 'Early retirement usually reduces your benefit. Plans often apply reduction factors for each year before normal retirement age (typically 65). A 5% reduction per year early equals 25% less at age 60 versus age 65.' },
-        { question: 'Should I take a lump sum or monthly pension?', answer: 'This depends on many factors: your health, other income, investment ability, spouse needs, and inflation concerns. Lump sums offer flexibility but transfer investment risk to you. Monthly payments guarantee lifetime income but may not keep pace with inflation.' },
-        { question: 'How does COLA work?', answer: 'Cost of Living Adjustments increase your pension annually with inflation. Not all plans offer COLA—those that do typically use CPI increases. Without COLA, inflation erodes your purchasing power over time.' },
-        { question: 'What if I change jobs?', answer: 'Vested pensions remain yours. Options: leave it with the employer (they will pay at retirement), roll to an IRA (if lump sum offered), or transfer to new employer's plan (rare). Leaving it in place usually means waiting until retirement age to collect.' },
+        { question: "How is pension calculated?", answer: "Most defined benefit pensions use a formula: Years of Service × Multiplier × Average Salary. For example, 30 years × 1.5% × $80,000 = $36,000 annual pension. Some plans use final salary, others average highest years." },
+        { question: "What is vesting?", answer: "Vesting means you have earned the right to your pension. Plans typically require 5-7 years for full vesting. If you leave before vesting, you may lose pension benefits. Vested benefits are yours even if you leave the employer." },
+        { question: "What is a survivor benefit?", answer: "A survivor (joint and survivor) benefit provides continued payments to your spouse after your death. It typically reduces your monthly pension by 10-15% but ensures your spouse receives a percentage (often 50-75%) of your benefit." },
+        { question: "What is a typical pension multiplier?", answer: "Multipliers vary widely: private sector often 1.0-1.5%, public sector (teachers, police, government) often 2.0-2.5%. Higher multipliers mean larger pensions but are less common in today's landscape." },
+        { question: "How does early retirement affect my pension?", answer: "Early retirement usually reduces your benefit. Plans often apply reduction factors for each year before normal retirement age (typically 65). A 5% reduction per year early equals 25% less at age 60 versus age 65." },
+        { question: "Should I take a lump sum or monthly pension?", answer: "This depends on many factors: your health, other income, investment ability, spouse needs, and inflation concerns. Lump sums offer flexibility but transfer investment risk to you. Monthly payments guarantee lifetime income but may not keep pace with inflation." },
+        { question: "How does COLA work?", answer: "Cost of Living Adjustments increase your pension annually with inflation. Not all plans offer COLA—those that do typically use CPI increases. Without COLA, inflation erodes your purchasing power over time." },
+        { question: "What if I change jobs?", answer: "Vested pensions remain yours. Options: leave it with the employer (they will pay at retirement), roll to an IRA (if lump sum offered), or transfer to new employer's plan (rare). Leaving it in place usually means waiting until retirement age to collect." },
       ]}
     />
   )

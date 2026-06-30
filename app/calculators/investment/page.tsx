@@ -114,7 +114,7 @@ export default function InvestmentCalculatorPage() {
     mainResult: {
       label: 'Future Value',
       value: formatCurrency(results.futureValue),
-      subtext: `${results.years.length} years of growth`,
+      subtext: `${results.yearlyBreakdown.length} years of growth`,
     },
     cards: [
       { label: 'Total Contributions', value: formatCurrency(results.totalContributions), color: '#2563EB' },
@@ -161,14 +161,14 @@ export default function InvestmentCalculatorPage() {
         "Adjust the inflation rate to see real purchasing power of your future nest egg.",
       ]}
       faqItems={[
-        { question: 'What is compound interest?', answer: 'Compound interest is interest earned on interest. When you earn returns, those returns also generate returns in subsequent periods. Over long periods, this creates exponential growth—your money starts earning more money, which earns even more money.' },
-        { question: 'What return rate should I expect?', answer: 'Historically, the stock market (S&P 500) has returned about 10% annually before inflation, or 7% after inflation over long periods. Bonds typically return 4-6%. Your actual return depends on your asset allocation, risk tolerance, and market conditions.' },
-        { question: 'Why does inflation matter?', answer: 'Inflation erodes purchasing power over time. If inflation averages 3% annually, your money loses half its purchasing power in about 24 years. The inflation-adjusted value shows what your future savings can actually buy in today terms.' },
-        { question: 'How important is starting early?', answer: 'Time is your greatest asset. Someone investing $500/month for 20 years (starting at 25) will have more than someone investing $1,000/month for 10 years (starting at 35), assuming equal returns. The earlier start gives compound interest more time to work.' },
-        { question: 'Should I invest more or seek higher returns?', answer: 'Increasing contributions is more reliable than chasing higher returns. Moving from 8% to 10% returns increases a 20-year outcome by about 35%, but doubling your monthly contribution doubles your results. Focus on what you can control: savings rate and time horizon.' },
-        { question: 'What about taxes on investment gains?', answer: 'This calculator shows pre-tax growth. In taxable accounts, you will owe capital gains tax when you sell. Tax-advantaged accounts like 401(k)s and IRAs allow tax-deferred or tax-free growth. Consider maxing tax-advantaged accounts first.' },
-        { question: 'How often should I invest?', answer: 'Monthly investing smooths out market volatility through dollar-cost averaging. It also builds a consistent savings habit. Some prefer weekly or bi-weekly to align with their pay schedule—the key is consistency over timing.' },
-        { question: 'What if the market crashes?', answer: 'Market downturns are normal and temporary. Historically, markets have always recovered and reached new highs. Continuing to invest during downturns allows you to buy more shares at lower prices, which can actually improve long-term returns.' },
+        { question: "What is compound interest?", answer: "Compound interest is interest earned on interest. When you earn returns, those returns also generate returns in subsequent periods. Over long periods, this creates exponential growth—your money starts earning more money, which earns even more money." },
+        { question: "What return rate should I expect?", answer: "Historically, the stock market (S&P 500) has returned about 10% annually before inflation, or 7% after inflation over long periods. Bonds typically return 4-6%. Your actual return depends on your asset allocation, risk tolerance, and market conditions." },
+        { question: "Why does inflation matter?", answer: "Inflation erodes purchasing power over time. If inflation averages 3% annually, your money loses half its purchasing power in about 24 years. The inflation-adjusted value shows what your future savings can actually buy in today terms." },
+        { question: "How important is starting early?", answer: "Time is your greatest asset. Someone investing $500/month for 20 years (starting at 25) will have more than someone investing $1,000/month for 10 years (starting at 35), assuming equal returns. The earlier start gives compound interest more time to work." },
+        { question: "Should I invest more or seek higher returns?", answer: "Increasing contributions is more reliable than chasing higher returns. Moving from 8% to 10% returns increases a 20-year outcome by about 35%, but doubling your monthly contribution doubles your results. Focus on what you can control: savings rate and time horizon." },
+        { question: "What about taxes on investment gains?", answer: "This calculator shows pre-tax growth. In taxable accounts, you will owe capital gains tax when you sell. Tax-advantaged accounts like 401(k)s and IRAs allow tax-deferred or tax-free growth. Consider maxing tax-advantaged accounts first." },
+        { question: "How often should I invest?", answer: "Monthly investing smooths out market volatility through dollar-cost averaging. It also builds a consistent savings habit. Some prefer weekly or bi-weekly to align with their pay schedule—the key is consistency over timing." },
+        { question: "What if the market crashes?", answer: "Market downturns are normal and temporary. Historically, markets have always recovered and reached new highs. Continuing to invest during downturns allows you to buy more shares at lower prices, which can actually improve long-term returns." },
       ]}
     />
   )

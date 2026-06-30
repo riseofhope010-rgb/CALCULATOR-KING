@@ -1,6 +1,7 @@
 'use client'
 
-import { Share2, Twitter, Facebook, Linkedin, Mail, MessageCircle } from 'lucide-react'
+import { Share2, Mail, MessageCircle } from 'lucide-react'
+import { Twitter, Facebook, Linkedin } from '@/components/shared/BrandIcons'
 
 interface ShareButtonsProps {
   title: string

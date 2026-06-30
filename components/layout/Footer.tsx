@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Calculator, Github, Twitter, Linkedin, Mail } from 'lucide-react'
+import { Calculator, Mail } from 'lucide-react'
+import { Github, Twitter, Linkedin } from '@/components/shared/BrandIcons'
 
 const CALCULATOR_LINKS = [
   { name: 'Salary Calculator', path: '/calculators/salary' },

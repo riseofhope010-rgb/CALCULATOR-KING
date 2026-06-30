@@ -26,7 +26,7 @@ export default function DownloadPDFButton({
       const element = targetRef.current
 
       const opt = {
-        margin: [10, 10, 10, 10],
+        margin: [10, 10, 10, 10] as [number, number, number, number],
         filename: filename,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
@@ -40,7 +40,7 @@ export default function DownloadPDFButton({
           format: 'a4',
           orientation: 'portrait',
         },
-      }
+      } as const
 
       await html2pdf().set(opt).from(element).save()
     } catch (error) {
