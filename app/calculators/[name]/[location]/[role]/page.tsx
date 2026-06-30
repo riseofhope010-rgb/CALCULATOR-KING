@@ -192,7 +192,10 @@ export default async function CalculatorLocationRolePage({ params }: { params: P
   const costOfLiving = locationData.costOfLiving
 
   // Generate intro paragraph
-  const introParagraph = `As a ${roleData.name.toLowerCase()} in ${locationDisplay}, understanding your financial position is crucial. The average annual salary for a ${roleData.name.toLowerCase()} in ${locationDisplay} is approximately ${formatSalary(avgSalary, locationData.currency)}, with a cost of living index that ${costOfLiving > 50000 ? 'reflects a higher cost metropolitan area' : 'offers more affordable living'}. Use our ${calculator.name.toLowerCase()} to get personalized financial projections based on your specific situation.`
+  const HEALTH_CALCULATORS = new Set(['bmi', 'calorie'])
+  const introParagraph = HEALTH_CALCULATORS.has(name)
+    ? `As a ${roleData.name.toLowerCase()} in ${locationDisplay}, staying on top of your health metrics matters just as much as your career. Use our ${calculator.name.toLowerCase()} to get a clear picture of your numbers, tailored to typical lifestyle factors for ${roleData.name.toLowerCase()}s in this field.`
+    : `As a ${roleData.name.toLowerCase()} in ${locationDisplay}, understanding your financial position is crucial. The average annual salary for a ${roleData.name.toLowerCase()} in ${locationDisplay} is approximately ${formatSalary(avgSalary, locationData.currency)}, with a cost of living index that ${costOfLiving > 50000 ? 'reflects a higher cost metropolitan area' : 'offers more affordable living'}. Use our ${calculator.name.toLowerCase()} to get personalized financial projections based on your specific situation.`
 
   // Generate related locations (same country, different cities)
   const relatedLocations = locations

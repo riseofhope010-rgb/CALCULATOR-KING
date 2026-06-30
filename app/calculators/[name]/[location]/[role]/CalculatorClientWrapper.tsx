@@ -39,6 +39,8 @@ interface CalculatorClientWrapperProps {
   roleData: RoleData
 }
 
+const HEALTH_CALCULATORS = new Set(['bmi', 'calorie'])
+
 export default function CalculatorClientWrapper({
   calculatorId,
   locationId,
@@ -48,6 +50,7 @@ export default function CalculatorClientWrapper({
   roleData,
 }: CalculatorClientWrapperProps) {
   const [mounted, setMounted] = useState(false)
+  const isHealth = HEALTH_CALCULATORS.has(calculatorId)
 
   useEffect(() => {
     setMounted(true)
@@ -76,16 +79,18 @@ export default function CalculatorClientWrapper({
               Adjusted for {locationData.name}{locationData.state ? `, ${locationData.state}` : ''}
             </p>
           </div>
-          <div className="text-right">
-            <div className="text-sm text-gray-500 dark:text-gray-400">Default Salary</div>
-            <div className="text-lg font-semibold text-primary">
-              {new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: locationData.currency,
-                maximumFractionDigits: 0,
-              }).format(defaultSalary)}
+          {!isHealth && (
+            <div className="text-right">
+              <div className="text-sm text-gray-500 dark:text-gray-400">Default Salary</div>
+              <div className="text-lg font-semibold text-primary">
+                {new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: locationData.currency,
+                  maximumFractionDigits: 0,
+                }).format(defaultSalary)}
+              </div>
             </div>
-          </div>
+          )}
         </div>
         <GenericCalculator
           calculatorId={calculatorId}

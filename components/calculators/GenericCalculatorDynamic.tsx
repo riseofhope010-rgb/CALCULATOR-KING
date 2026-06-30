@@ -25,19 +25,34 @@ interface DynamicCalculatorProps {
   roleId: string
 }
 
+// Calculators that deal with money (show currency symbol, salary context, currency-formatted results)
+const FINANCIAL_CALCULATORS = new Set([
+  'salary', 'tax', 'mortgage', 'investment', 'compound-interest', 'loan', 'loan-emi',
+  'retirement', 'currency', 'freelance-rate', 'roi', 'affiliate-commission',
+  'cost-of-living', 'crypto', 'forex', 'contractor-income', 'pension', 'profit-margin',
+])
+
+// Health calculators use physical units (kg, cm) and have nothing to do with salary/currency
+const HEALTH_CALCULATORS = new Set(['bmi', 'calorie'])
+
 export default function GenericCalculatorDynamic({
   calculatorId,
   defaultSalary,
   locationData,
   roleData,
 }: DynamicCalculatorProps) {
-  const [inputValue, setInputValue] = useState(defaultSalary)
+  const isFinancial = FINANCIAL_CALCULATORS.has(calculatorId)
+  const isHealth = HEALTH_CALCULATORS.has(calculatorId)
+
+  // For health calculators, start from a sensible default weight (70kg) instead of a salary figure
+  const [inputValue, setInputValue] = useState(isHealth ? 70 : defaultSalary)
+  const [heightCm, setHeightCm] = useState(170)
   const [results, setResults] = useState<Record<string, number | string>>({})
 
   useEffect(() => {
-    const calculated = calculateResults(calculatorId, inputValue, locationData)
+    const calculated = calculateResults(calculatorId, inputValue, locationData, heightCm)
     setResults(calculated)
-  }, [calculatorId, inputValue, locationData])
+  }, [calculatorId, inputValue, heightCm, locationData])
 
   const getInputLabel = () => {
     switch (calculatorId) {
@@ -129,14 +144,17 @@ export default function GenericCalculatorDynamic({
   }
 
   const formatResult = (value: number): string => {
-    if (['salary', 'tax', 'mortgage', 'investment', 'loan', 'retirement', 'currency', 'cost-of-living', 'crypto', 'forex', 'contractor-income', 'pension'].includes(calculatorId)) {
+    if (isFinancial) {
+      if (['roi', 'profit-margin'].includes(calculatorId)) {
+        return formatPercent(value)
+      }
+      if (calculatorId === 'affiliate-commission') {
+        return formatNumber(value)
+      }
       return formatCurrency(value, locationData.currency)
     }
-    if (['roi', 'profit-margin'].includes(calculatorId)) {
-      return formatPercent(value)
-    }
-    if (['calorie', 'affiliate-commission'].includes(calculatorId)) {
-      return formatNumber(value)
+    if (calculatorId === 'calorie') {
+      return `${formatNumber(value, 0)} kcal`
     }
     return formatNumber(value, 2)
   }
@@ -147,28 +165,47 @@ export default function GenericCalculatorDynamic({
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {getInputLabel()} ({locationData.currency})
+              {getInputLabel()}{isFinancial ? ` (${locationData.currency})` : ''}
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                {locationData.currency === 'USD' ? '$' : locationData.currency}
-              </span>
+              {isFinancial && (
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                  {locationData.currency === 'USD' ? '$' : locationData.currency}
+                </span>
+              )}
               <input
                 type="number"
                 value={inputValue}
                 onChange={(e) => setInputValue(parseFloat(e.target.value) || 0)}
-                className="input-field pl-8 w-full"
+                className={`input-field w-full ${isFinancial ? 'pl-8' : ''}`}
               />
             </div>
           </div>
-          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {roleData.name} average in {locationData.name}: {formatCurrency(defaultSalary, locationData.currency)}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-              State tax rate: {(locationData.stateTaxRate * 100).toFixed(1)}%
-            </p>
-          </div>
+
+          {calculatorId === 'bmi' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Height (cm)
+              </label>
+              <input
+                type="number"
+                value={heightCm}
+                onChange={(e) => setHeightCm(parseFloat(e.target.value) || 0)}
+                className="input-field w-full"
+              />
+            </div>
+          )}
+
+          {isFinancial && (
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {roleData.name} average in {locationData.name}: {formatCurrency(defaultSalary, locationData.currency)}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                State tax rate: {(locationData.stateTaxRate * 100).toFixed(1)}%
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="space-y-4">
@@ -204,7 +241,7 @@ export default function GenericCalculatorDynamic({
   )
 }
 
-function calculateResults(calculatorId: string, inputValue: number, locationData: { stateTaxRate: number; costOfLiving: number }): Record<string, number | string> {
+function calculateResults(calculatorId: string, inputValue: number, locationData: { stateTaxRate: number; costOfLiving: number }, heightCm: number = 170): Record<string, number | string> {
   switch (calculatorId) {
     case 'salary':
       const salaryNet = inputValue * (1 - 0.22 - locationData.stateTaxRate - 0.0765)
@@ -272,12 +309,13 @@ function calculateResults(calculatorId: string, inputValue: number, locationData
         'Base': 'EUR',
       }
     case 'bmi':
-      const bmi = inputValue / 1.75 / 1.75
+      const heightM = heightCm / 100
+      const bmi = inputValue / (heightM * heightM)
       const category = bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese'
       return {
         mainResult: bmi,
         'Category': category,
-        'Height': 1.75,
+        'Height (cm)': heightCm,
       }
     case 'calorie':
       const bmr = 10 * inputValue + 6.25 * 175 - 5 * 30 + 5
