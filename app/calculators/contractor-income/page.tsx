@@ -173,15 +173,15 @@ export default function ContractorIncomePage() {
         "Add your health insurance costs.",
         "Include retirement contributions to compare fully.",
       ]}
-      faqItems={[
-        { question: 'What is self-employment tax?', answer: 'Self-employment tax covers both employer and employee portions of Social Security (12.4%) and Medicare (2.9%)—total 15.3%. W-2 employees pay half (7.65%), employers pay the other half. As a contractor, you pay both.' },
-       { question: 'Why is my effective hourly rate lower?', answer: "Effective rate accounts for unpaid time (admin, marketing, training), taxes, and expenses. If you bill $100/hr but only 30 of 40 hours are billable, that's effectively $75/hr. Add taxes and expenses, and effective rate drops further." },
-        { question: 'What benefits do W-2 employees get?', answer: 'Employers typically provide: health insurance (often 80%+ paid), retirement matching, paid time off, sick leave, disability insurance, life insurance, and professional development. W-2 also have unemployment insurance and workers comp.' },
-        { question: 'How much higher should my contractor rate be?', answer: 'A rule of thumb: add 30-50% to a W-2 salary's equivalent hourly rate (salary / 2080). This covers self-employment tax (15.3%), benefits (20-30%), and risk premium. For $100K salary, target $70-80/hr minimum as contractor.' },
-        { question: 'Can I deduct business expenses?', answer: 'Yes, business expenses reduce taxable income: home office, equipment, software, professional development, travel, marketing. Keep detailed records. Health insurance premiums are also deductible above the line.' },
-        { question: 'What about retirement as a contractor?', answer: 'Contractors can use SEP-IRA (up to 25% income, capped), Solo 401(k) (up to $66,000 in 2023), or SIMPLE IRA. These often offer higher limits than W-2 401(k)s. Plan for this in your rate calculations.' },
-        { question: 'Is it better to be W-2 or 1099?', answer: 'It depends on your situation. W-2 offers stability, benefits, and less admin. 1099 offers flexibility, higher gross earning potential, and autonomy. Consider your risk tolerance, family situation, health insurance needs, and career goals.' },
-        { question: 'How do I handle taxes quarterly?', answer: 'Contractors must make quarterly estimated tax payments. Calculate annual expected tax, divide by 4, and pay by due dates (April, June, September, January). Underpayment can result in penalties. Budget 30% of income for taxes.' },
+  faqItems={[
+        { question: "What is self-employment tax?", answer: "Self-employment tax covers both employer and employee portions of Social Security (12.4%) and Medicare (2.9%)—total 15.3%. W-2 employees pay half (7.65%), employers pay the other half. As a contractor, you pay both." },
+        { question: "Why is my effective hourly rate lower?", answer: "Effective rate accounts for unpaid time (admin, marketing, training), taxes, and expenses. If you bill $100/hr but only 30 of 40 hours are billable, that's effectively $75/hr. Add taxes and expenses, and effective rate drops further." },
+        { question: "What benefits do W-2 employees get?", answer: "Employers typically provide: health insurance (often 80%+ paid), retirement matching, paid time off, sick leave, disability insurance, life insurance, and professional development. W-2 also have unemployment insurance and workers comp." },
+        { question: "How much higher should my contractor rate be?", answer: "A rule of thumb: add 30-50% to a W-2 salary's equivalent hourly rate (salary / 2080). This covers self-employment tax (15.3%), benefits (20-30%), and risk premium. For $100K salary, target $70-80/hr minimum as contractor." },
+        { question: "Can I deduct business expenses?", answer: "Yes, business expenses reduce taxable income: home office, equipment, software, professional development, travel, marketing. Keep detailed records. Health insurance premiums are also deductible above the line." },
+        { question: "What about retirement as a contractor?", answer: "Contractors can use SEP-IRA (up to 25% income, capped), Solo 401(k) (up to $66,000 in 2023), or SIMPLE IRA. These often offer higher limits than W-2 401(k)s. Plan for this in your rate calculations." },
+        { question: "Is it better to be W-2 or 1099?", answer: "It depends on your situation. W-2 offers stability, benefits, and less admin. 1099 offers flexibility, higher gross earning potential, and autonomy. Consider your risk tolerance, family situation, health insurance needs, and career goals." },
+        { question: "How do I handle taxes quarterly?", answer: "Contractors must make quarterly estimated tax payments. Calculate annual expected tax, divide by 4, and pay by due dates (April, June, September, January). Underpayment can result in penalties. Budget 30% of income for taxes." },
       ]}
     />
   )
