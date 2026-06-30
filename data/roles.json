@@ -1,0 +1,152 @@
+[
+  {
+    "id": "software-engineer",
+    "name": "Software Engineer",
+    "category": "Technology",
+    "description": "Designs, develops, and maintains software systems and applications",
+    "avgExperience": "5-10 years",
+    "education": "Bachelor's in Computer Science or related field",
+    "skills": ["Programming", "System Design", "Problem Solving", "Version Control", "Testing"],
+    "keywords": ["developer", "programmer", "software development", "coding", "engineering"]
+  },
+  {
+    "id": "teacher",
+    "name": "Teacher",
+    "category": "Education",
+    "description": "Educates students in various subjects at elementary, secondary, or post-secondary levels",
+    "avgExperience": "3-15 years",
+    "education": "Bachelor's in Education or subject area",
+    "skills": ["Classroom Management", "Curriculum Development", "Communication", "Patience", "Assessment"],
+    "keywords": ["educator", "instructor", "professor", "teaching", "academics"]
+  },
+  {
+    "id": "doctor",
+    "name": "Doctor",
+    "category": "Healthcare",
+    "description": "Diagnoses and treats patients, prescribes medications, and manages health conditions",
+    "avgExperience": "8-20 years",
+    "education": "Medical Doctor (MD) or Doctor of Osteopathic Medicine (DO)",
+    "skills": ["Patient Care", "Diagnosis", "Treatment Planning", "Medical Knowledge", "Communication"],
+    "keywords": ["physician", "medical doctor", "healthcare provider", "medicine", "clinical"]
+  },
+  {
+    "id": "nurse",
+    "name": "Nurse",
+    "category": "Healthcare",
+    "description": "Provides patient care, administers medications, and supports medical teams",
+    "avgExperience": "2-15 years",
+    "education": "Bachelor of Science in Nursing (BSN) or Associate Degree",
+    "skills": ["Patient Care", "Medication Administration", "Vital Signs", "Communication", "Critical Thinking"],
+    "keywords": ["registered nurse", "RN", "nursing", "healthcare", "patient care"]
+  },
+  {
+    "id": "manager",
+    "name": "Manager",
+    "category": "Business",
+    "description": "Oversees teams, projects, and operations to achieve organizational goals",
+    "avgExperience": "5-15 years",
+    "education": "Bachelor's degree, often MBA",
+    "skills": ["Leadership", "Project Management", "Strategic Planning", "Communication", "Decision Making"],
+    "keywords": ["project manager", "team lead", "supervisor", "management", "operations"]
+  },
+  {
+    "id": "accountant",
+    "name": "Accountant",
+    "category": "Finance",
+    "description": "Prepares and examines financial records, ensures accuracy and tax compliance",
+    "avgExperience": "3-10 years",
+    "education": "Bachelor's in Accounting, often CPA certified",
+    "skills": ["Financial Analysis", "Tax Preparation", "Auditing", "Accounting Software", "Attention to Detail"],
+    "keywords": ["CPA", "financial analyst", "auditor", "bookkeeping", "tax professional"]
+  },
+  {
+    "id": "designer",
+    "name": "Designer",
+    "category": "Creative",
+    "description": "Creates visual designs for digital and print media, products, and experiences",
+    "avgExperience": "2-10 years",
+    "education": "Bachelor's in Design, Fine Arts, or related field",
+    "skills": ["Visual Design", "UI/UX", "Adobe Creative Suite", "Creativity", "Typography"],
+    "keywords": ["graphic designer", "UI designer", "UX designer", "visual designer", "creative"]
+  },
+  {
+    "id": "analyst",
+    "name": "Analyst",
+    "category": "Business",
+    "description": "Analyzes data and business processes to provide insights and recommendations",
+    "avgExperience": "2-8 years",
+    "education": "Bachelor's in Business, Finance, or related field",
+    "skills": ["Data Analysis", "SQL", "Excel", "Reporting", "Problem Solving"],
+    "keywords": ["business analyst", "data analyst", "financial analyst", "analytics", "research"]
+  },
+  {
+    "id": "sales-rep",
+    "name": "Sales Representative",
+    "category": "Sales",
+    "description": "Sells products and services to customers, builds relationships, and meets targets",
+    "avgExperience": "1-10 years",
+    "education": "High school diploma or Bachelor's degree",
+    "skills": ["Communication", "Negotiation", "Product Knowledge", "Customer Service", "Closing"],
+    "keywords": ["account executive", "salesperson", "business development", "inside sales", "outside sales"]
+  },
+  {
+    "id": "electrician",
+    "name": "Electrician",
+    "category": "Trades",
+    "description": "Installs, maintains, and repairs electrical systems and equipment",
+    "avgExperience": "2-15 years",
+    "education": "Apprenticeship, technical school, or vocational training",
+    "skills": ["Electrical Systems", "Troubleshooting", "Safety Protocols", "Blueprint Reading", "Hand Tools"],
+    "keywords": ["electrical contractor", "wireman", "journeyman electrician", "electrical work", "wiring"]
+  },
+  {
+    "id": "plumber",
+    "name": "Plumber",
+    "category": "Trades",
+    "description": "Installs and repairs piping systems for water, gas, and drainage",
+    "avgExperience": "2-15 years",
+    "education": "Apprenticeship or vocational training",
+    "skills": ["Pipe Installation", "Troubleshooting", "Blueprint Reading", "Physical Stamina", "Tools"],
+    "keywords": ["pipefitter", "plumbing contractor", "journeyman plumber", "drainage", "fixtures"]
+  },
+  {
+    "id": "carpenter",
+    "name": "Carpenter",
+    "category": "Trades",
+    "description": "Constructs, installs, and repairs wooden structures and fixtures",
+    "avgExperience": "2-15 years",
+    "education": "Apprenticeship or vocational training",
+    "skills": ["Woodworking", "Blueprint Reading", "Measuring", "Power Tools", "Framing"],
+    "keywords": ["woodworker", "framer", "finish carpenter", "construction", "cabinetry"]
+  },
+  {
+    "id": "mechanic",
+    "name": "Mechanic",
+    "category": "Trades",
+    "description": "Diagnoses, maintains, and repairs vehicles and mechanical equipment",
+    "avgExperience": "2-15 years",
+    "education": "Vocational school or certification program",
+    "skills": ["Vehicle Systems", "Diagnostics", "Hand Tools", "Problem Solving", "Safety"],
+    "keywords": ["automotive technician", "auto mechanic", "diesel mechanic", "repair", "maintenance"]
+  },
+  {
+    "id": "developer",
+    "name": "Web Developer",
+    "category": "Technology",
+    "description": "Builds and maintains websites and web applications",
+    "avgExperience": "2-8 years",
+    "education": "Bachelor's or coding bootcamp certification",
+    "skills": ["HTML/CSS", "JavaScript", "React/Vue/Angular", "Backend Development", "Databases"],
+    "keywords": ["frontend developer", "full stack developer", "web development", "coding", "programming"]
+  },
+  {
+    "id": "consultant",
+    "name": "Consultant",
+    "category": "Professional Services",
+    "description": "Provides expert advice to organizations in specific areas of expertise",
+    "avgExperience": "5-15 years",
+    "education": "Bachelor's degree, often MBA or specialized certification",
+    "skills": ["Strategic Planning", "Problem Solving", "Communication", "Industry Knowledge", "Analysis"],
+    "keywords": ["management consultant", "business consultant", "advisor", "strategy", "professional services"]
+  }
+]

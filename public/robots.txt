@@ -1,0 +1,16 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow admin and API routes
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Allow all static assets
+Allow: /calculators/
+Allow: /images/
+Allow: /fonts/
+
+# Sitemap
+Sitemap: https://calculatorking.com/sitemap.xml
