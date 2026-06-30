@@ -32,6 +32,11 @@ const FINANCIAL_CALCULATORS = new Set([
   'cost-of-living', 'crypto', 'forex', 'contractor-income', 'pension', 'profit-margin',
 ])
 
+// Calculators whose INPUT field is a count/duration, not a money amount,
+// even though the calculator itself is otherwise financial (e.g. pension uses
+// "Years of Service", affiliate-commission uses "Monthly Clicks")
+const NON_CURRENCY_INPUT = new Set(['affiliate-commission', 'pension'])
+
 // Health calculators use physical units (kg, cm) and have nothing to do with salary/currency
 const HEALTH_CALCULATORS = new Set(['bmi', 'calorie'])
 
@@ -43,9 +48,17 @@ export default function GenericCalculatorDynamic({
 }: DynamicCalculatorProps) {
   const isFinancial = FINANCIAL_CALCULATORS.has(calculatorId)
   const isHealth = HEALTH_CALCULATORS.has(calculatorId)
+  const showCurrencyOnInput = isFinancial && !NON_CURRENCY_INPUT.has(calculatorId)
 
-  // For health calculators, start from a sensible default weight (70kg) instead of a salary figure
-  const [inputValue, setInputValue] = useState(isHealth ? 70 : defaultSalary)
+  // For health calculators, start from a sensible default weight (70kg) instead of a salary figure.
+  // For non-currency financial inputs (years, click counts), use a sensible default instead of a salary number.
+  const getDefaultInputValue = () => {
+    if (isHealth) return 70
+    if (calculatorId === 'pension') return 10 // years of service
+    if (calculatorId === 'affiliate-commission') return 10000 // monthly clicks
+    return defaultSalary
+  }
+  const [inputValue, setInputValue] = useState(getDefaultInputValue())
   const [heightCm, setHeightCm] = useState(170)
   const [results, setResults] = useState<Record<string, number | string>>({})
 
@@ -165,10 +178,10 @@ export default function GenericCalculatorDynamic({
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {getInputLabel()}{isFinancial ? ` (${locationData.currency})` : ''}
+              {getInputLabel()}{showCurrencyOnInput ? ` (${locationData.currency})` : ''}
             </label>
             <div className="relative">
-              {isFinancial && (
+              {showCurrencyOnInput && (
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
                   {locationData.currency === 'USD' ? '$' : locationData.currency}
                 </span>
@@ -177,7 +190,7 @@ export default function GenericCalculatorDynamic({
                 type="number"
                 value={inputValue}
                 onChange={(e) => setInputValue(parseFloat(e.target.value) || 0)}
-                className={`input-field w-full ${isFinancial ? 'pl-8' : ''}`}
+                className={`input-field w-full ${showCurrencyOnInput ? 'pl-8' : ''}`}
               />
             </div>
           </div>
