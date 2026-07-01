@@ -3,9 +3,7 @@ import { Inter } from 'next/font/google'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import './globals.css'
-
 const inter = Inter({ subsets: ['latin'] })
-
 export const metadata: Metadata = {
   title: 'CalculatorKing - Professional Financial Calculators',
   description: 'Free online calculators for salary, mortgage, investment, loans, taxes, and more. Calculate your finances with precision and ease.',
@@ -22,8 +20,10 @@ export const metadata: Metadata = {
     title: 'CalculatorKing - Professional Financial Calculators',
     description: 'Free online calculators for salary, mortgage, investment, loans, taxes, and more.',
   },
+  verification: {
+    google: 'ea_ke7DJXLotbrxFT5BXRXUzfrbNSxL_2n8Q8_GKAH4',
+  },
 }
-
 export default function RootLayout({
   children,
 }: {
