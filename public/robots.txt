@@ -13,4 +13,4 @@ Allow: /images/
 Allow: /fonts/
 
 # Sitemap
-Sitemap: https://calculatorking.com/sitemap.xml
+Sitemap: https://calculatorking.vercel.app/sitemap.xml

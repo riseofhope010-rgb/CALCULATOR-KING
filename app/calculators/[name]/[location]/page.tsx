@@ -114,7 +114,7 @@ export async function generateMetadata({ params }: { params: Promise<PageParams>
       description,
     },
     alternates: {
-      canonical: `https://calculatorking.com/calculators/${name}/${location}`,
+      canonical: `https://calculatorking.vercel.app/calculators/${name}/${location}`,
     },
   }
 }
@@ -138,10 +138,10 @@ export default async function CalculatorLocationPage({ params }: { params: Promi
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     'itemListElement': [
-      { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://calculatorking.com' },
-      { '@type': 'ListItem', 'position': 2, 'name': 'Calculators', 'item': 'https://calculatorking.com/calculators' },
-      { '@type': 'ListItem', 'position': 3, 'name': calculator.name, 'item': `https://calculatorking.com/calculators/${name}` },
-      { '@type': 'ListItem', 'position': 4, 'name': locationData.name, 'item': `https://calculatorking.com/calculators/${name}/${location}` },
+      { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://calculatorking.vercel.app' },
+      { '@type': 'ListItem', 'position': 2, 'name': 'Calculators', 'item': 'https://calculatorking.vercel.app/calculators' },
+      { '@type': 'ListItem', 'position': 3, 'name': calculator.name, 'item': `https://calculatorking.vercel.app/calculators/${name}` },
+      { '@type': 'ListItem', 'position': 4, 'name': locationData.name, 'item': `https://calculatorking.vercel.app/calculators/${name}/${location}` },
     ],
   }
 

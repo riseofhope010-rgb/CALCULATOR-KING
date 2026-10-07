@@ -125,7 +125,7 @@ export async function generateMetadata({ params }: { params: Promise<PageParams>
       description,
     },
     alternates: {
-      canonical: `https://calculatorking.com/calculators/${name}/${location}/${role}`,
+      canonical: `https://calculatorking.vercel.app/calculators/${name}/${location}/${role}`,
     },
   }
 }
@@ -140,31 +140,31 @@ function generateBreadcrumbSchema(name: string, location: string, role: string, 
         '@type': 'ListItem',
         'position': 1,
         'name': 'Home',
-        'item': 'https://calculatorking.com',
+        'item': 'https://calculatorking.vercel.app',
       },
       {
         '@type': 'ListItem',
         'position': 2,
         'name': 'Calculators',
-        'item': 'https://calculatorking.com/calculators',
+        'item': 'https://calculatorking.vercel.app/calculators',
       },
       {
         '@type': 'ListItem',
         'position': 3,
         'name': CALCULATORS.find(c => c.id === name)?.name || 'Calculator',
-        'item': `https://calculatorking.com/calculators/${name}`,
+        'item': `https://calculatorking.vercel.app/calculators/${name}`,
       },
       {
         '@type': 'ListItem',
         'position': 4,
         'name': locationData.name,
-        'item': `https://calculatorking.com/calculators/${name}/${location}`,
+        'item': `https://calculatorking.vercel.app/calculators/${name}/${location}`,
       },
       {
         '@type': 'ListItem',
         'position': 5,
         'name': roleData.name,
-        'item': `https://calculatorking.com/calculators/${name}/${location}/${role}`,
+        'item': `https://calculatorking.vercel.app/calculators/${name}/${location}/${role}`,
       },
     ],
   }
