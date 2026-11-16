@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Zap } from 'lucide-react'
 import { formatCurrency, formatNumber, formatPercent } from '@/lib/utils/format'
+import { SMART_TIPS } from '@/lib/smart-insights'
 import { calculateROI } from '@/lib/calculations/roi'
 import { calculateSalary } from '@/lib/calculations/salary'
 import { calculateTax } from '@/lib/calculations/tax'
@@ -142,14 +144,17 @@ export default function GenericCalculatorDynamic({
   const [inputValue, setInputValue] = useState(getDefaultInputValue())
   const [heightCm, setHeightCm] = useState(170)
   // Extra inputs for this calculator (rate, term, prices, ...), initialised from
-  // the config defaults above.
+  // the config defaults above. Defaults are rounded to 2 decimals so a computed
+  // default like 42000 * 1.15 never renders as R$48299.99999999999.
+  const round2 = (n: number) => Math.round(n * 100) / 100
   const [extras, setExtras] = useState<Record<string, number>>(() => {
     const init: Record<string, number> = {}
     for (const def of EXTRA_INPUTS[calculatorId] ?? []) {
-      init[def.key] = typeof def.defaultValue === 'function' ? def.defaultValue(defaultSalary) : def.defaultValue
+      init[def.key] = round2(typeof def.defaultValue === 'function' ? def.defaultValue(defaultSalary) : def.defaultValue)
     }
     return init
   })
+  const [showInsights, setShowInsights] = useState(false)
   const [results, setResults] = useState<Record<string, number | string>>({})
 
   useEffect(() => {
@@ -301,7 +306,7 @@ export default function GenericCalculatorDynamic({
           )}
 
           {(EXTRA_INPUTS[calculatorId] ?? []).map((def) => {
-            const defValue = typeof def.defaultValue === 'function' ? def.defaultValue(defaultSalary) : def.defaultValue
+            const defValue = round2(typeof def.defaultValue === 'function' ? def.defaultValue(defaultSalary) : def.defaultValue)
             return (
               <div key={def.key}>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -364,6 +369,33 @@ export default function GenericCalculatorDynamic({
                 ))}
             </div>
           )}
+
+          {/* Smart Insights — real panel built from the visitor's own results
+              above, plus factual tips. No AI model is involved. */}
+          <div>
+            <button
+              onClick={() => setShowInsights((prev) => !prev)}
+              className="btn-primary flex items-center gap-2 px-6 py-3 w-full justify-center"
+            >
+              <Zap className="w-5 h-5" />
+              {showInsights ? 'Hide Smart Insights' : 'Get Smart Insights'}
+            </button>
+            {showInsights && (
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mt-3">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Smart Insights</h3>
+                {results.mainResult !== undefined && (
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                    Based on your numbers: {getResultLabel()} is {formatResult(results.mainResult as number)}.
+                  </p>
+                )}
+                <ul className="list-disc list-inside space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                  {(SMART_TIPS[calculatorId] ?? ['Compare your result with the benchmark for your situation before deciding.']).map((tip) => (
+                    <li key={tip}>{tip}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -197,8 +197,15 @@ export default async function CalculatorLocationPage({ params }: { params: Promi
                 {locationData.stateTaxRate === 0 && <p className="text-sm text-green-600">No state income tax!</p>}
               </div>
               <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Cost of Living Index</h3>
-                <p className="text-2xl font-bold text-secondary">{locationData.costOfLiving.toLocaleString()}</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Cost of Living</h3>
+                <p className="text-2xl font-bold text-secondary">
+                  {new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: locationData.currency,
+                    maximumFractionDigits: 0,
+                  }).format(locationData.costOfLiving)}
+                </p>
+                <p className="text-sm text-gray-500">per year (estimate)</p>
               </div>
             </div>
           </div>
