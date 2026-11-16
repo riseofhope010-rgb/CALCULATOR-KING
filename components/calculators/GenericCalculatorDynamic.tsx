@@ -2,6 +2,25 @@
 
 import { useState, useEffect } from 'react'
 import { formatCurrency, formatNumber, formatPercent } from '@/lib/utils/format'
+import { calculateROI } from '@/lib/calculations/roi'
+import { calculateSalary } from '@/lib/calculations/salary'
+import { calculateTax } from '@/lib/calculations/tax'
+import { calculateMortgage } from '@/lib/calculations/mortgage'
+import { calculateInvestment } from '@/lib/calculations/investment'
+import { calculateCompoundInterest } from '@/lib/calculations/compound-interest'
+import { calculateLoan } from '@/lib/calculations/loan'
+import { calculateLoanEMI } from '@/lib/calculations/loan-emi'
+import { calculateRetirement } from '@/lib/calculations/retirement'
+import { convertCurrency } from '@/lib/calculations/currency'
+import { calculateBMI } from '@/lib/calculations/bmi'
+import { calculateCalories } from '@/lib/calculations/calorie'
+import { calculateFreelanceRate } from '@/lib/calculations/freelance-rate'
+import { calculateAffiliate } from '@/lib/calculations/affiliate'
+import { calculateCrypto } from '@/lib/calculations/crypto'
+import { calculateForex } from '@/lib/calculations/forex'
+import { calculateContractorIncome } from '@/lib/calculations/contractor'
+import { calculatePension } from '@/lib/calculations/pension'
+import { calculateProfitMargin } from '@/lib/calculations/profit-margin'
 
 interface DynamicCalculatorProps {
   calculatorId: string
@@ -40,6 +59,68 @@ const NON_CURRENCY_INPUT = new Set(['affiliate-commission', 'pension'])
 // Health calculators use physical units (kg, cm) and have nothing to do with salary/currency
 const HEALTH_CALCULATORS = new Set(['bmi', 'calorie'])
 
+// Currency symbol for the input prefix (R$ for BRL, $ for USD, € for EUR, ...).
+// The old code printed the raw code ("BRL", clipped to "BR" on the page) instead.
+const getCurrencySymbol = (currency: string): string => {
+  try {
+    const part = new Intl.NumberFormat('en-US', { style: 'currency', currency })
+      .formatToParts(0)
+      .find(p => p.type === 'currency')
+    return part ? part.value : currency
+  } catch {
+    return currency
+  }
+}
+
+// Extra inputs some calculators need beyond the single main input.
+// Defaults keep the old first impression (same numbers the page showed before)
+// while the math behind them is now the real lib, not a hardcoded formula.
+interface ExtraInputDef {
+  key: string
+  label: string
+  defaultValue: number | ((defaultSalary: number) => number)
+  isCurrency?: boolean
+}
+
+const EXTRA_INPUTS: Record<string, ExtraInputDef[]> = {
+  mortgage: [
+    { key: 'rate', label: 'Interest Rate (%)', defaultValue: 7.8 },
+    { key: 'termYears', label: 'Loan Term (years)', defaultValue: 30 },
+  ],
+  investment: [
+    { key: 'returnPct', label: 'Expected Return (%)', defaultValue: 8 },
+    { key: 'years', label: 'Investment Period (years)', defaultValue: 10 },
+  ],
+  'compound-interest': [
+    { key: 'rate', label: 'Annual Rate (%)', defaultValue: 8 },
+    { key: 'years', label: 'Years', defaultValue: 10 },
+  ],
+  loan: [
+    { key: 'rate', label: 'Interest Rate (%)', defaultValue: 9 },
+    { key: 'termMonths', label: 'Loan Term (months)', defaultValue: 60 },
+  ],
+  'loan-emi': [
+    { key: 'rate', label: 'Annual Rate (%)', defaultValue: 9 },
+    { key: 'tenureMonths', label: 'Tenure (months)', defaultValue: 60 },
+  ],
+  retirement: [
+    { key: 'returnPct', label: 'Expected Return (%)', defaultValue: 7 },
+    { key: 'monthlyContribution', label: 'Monthly Contribution', defaultValue: 0, isCurrency: true },
+  ],
+  crypto: [
+    { key: 'buyPrice', label: 'Purchase Price (per coin)', defaultValue: 100, isCurrency: true },
+    { key: 'currentPrice', label: 'Current Price (per coin)', defaultValue: 100, isCurrency: true },
+  ],
+  forex: [
+    { key: 'entryPrice', label: 'Entry Price', defaultValue: 1.085 },
+    { key: 'exitPrice', label: 'Exit Price', defaultValue: 1.087 },
+  ],
+  roi: [
+    { key: 'finalValue', label: 'Final Value', defaultValue: (s: number) => s * 1.15, isCurrency: true },
+    { key: 'periodYears', label: 'Investment Period (years)', defaultValue: 1 },
+  ],
+}
+
 export default function GenericCalculatorDynamic({
   calculatorId,
   defaultSalary,
@@ -60,12 +141,21 @@ export default function GenericCalculatorDynamic({
   }
   const [inputValue, setInputValue] = useState(getDefaultInputValue())
   const [heightCm, setHeightCm] = useState(170)
+  // Extra inputs for this calculator (rate, term, prices, ...), initialised from
+  // the config defaults above.
+  const [extras, setExtras] = useState<Record<string, number>>(() => {
+    const init: Record<string, number> = {}
+    for (const def of EXTRA_INPUTS[calculatorId] ?? []) {
+      init[def.key] = typeof def.defaultValue === 'function' ? def.defaultValue(defaultSalary) : def.defaultValue
+    }
+    return init
+  })
   const [results, setResults] = useState<Record<string, number | string>>({})
 
   useEffect(() => {
-    const calculated = calculateResults(calculatorId, inputValue, locationData, heightCm)
+    const calculated = calculateResults(calculatorId, inputValue, locationData, heightCm, extras, defaultSalary)
     setResults(calculated)
-  }, [calculatorId, inputValue, heightCm, locationData])
+  }, [calculatorId, inputValue, heightCm, locationData, extras, defaultSalary])
 
   const getInputLabel = () => {
     switch (calculatorId) {
@@ -161,8 +251,9 @@ export default function GenericCalculatorDynamic({
       if (['roi', 'profit-margin'].includes(calculatorId)) {
         return formatPercent(value)
       }
-      if (calculatorId === 'affiliate-commission') {
-        return formatNumber(value)
+      if (calculatorId === 'currency') {
+        // The converted amount is in the TARGET currency, not the location's.
+        return formatCurrency(value, locationData.currency === 'USD' ? 'EUR' : 'USD')
       }
       return formatCurrency(value, locationData.currency)
     }
@@ -183,7 +274,7 @@ export default function GenericCalculatorDynamic({
             <div className="relative">
               {showCurrencyOnInput && (
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                  {locationData.currency === 'USD' ? '$' : locationData.currency}
+                  {getCurrencySymbol(locationData.currency)}
                 </span>
               )}
               <input
@@ -195,7 +286,7 @@ export default function GenericCalculatorDynamic({
             </div>
           </div>
 
-          {calculatorId === 'bmi' && (
+          {(calculatorId === 'bmi' || calculatorId === 'calorie') && (
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Height (cm)
@@ -208,6 +299,31 @@ export default function GenericCalculatorDynamic({
               />
             </div>
           )}
+
+          {(EXTRA_INPUTS[calculatorId] ?? []).map((def) => {
+            const defValue = typeof def.defaultValue === 'function' ? def.defaultValue(defaultSalary) : def.defaultValue
+            return (
+              <div key={def.key}>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {def.label}{def.isCurrency ? ` (${locationData.currency})` : ''}
+                </label>
+                <div className="relative">
+                  {def.isCurrency && (
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                      {getCurrencySymbol(locationData.currency)}
+                    </span>
+                  )}
+                  <input
+                    type="number"
+                    step="any"
+                    value={extras[def.key] ?? defValue}
+                    onChange={(e) => setExtras((prev) => ({ ...prev, [def.key]: parseFloat(e.target.value) || 0 }))}
+                    className={`input-field w-full ${def.isCurrency ? 'pl-8' : ''}`}
+                  />
+                </div>
+              </div>
+            )
+          })}
 
           {isFinancial && (
             <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
@@ -254,164 +370,314 @@ export default function GenericCalculatorDynamic({
   )
 }
 
-function calculateResults(calculatorId: string, inputValue: number, locationData: { stateTaxRate: number; costOfLiving: number }, heightCm: number = 170): Record<string, number | string> {
+function calculateResults(calculatorId: string, inputValue: number, locationData: { state: string | null; stateTaxRate: number; costOfLiving: number; currency: string }, heightCm: number = 170, extras: Record<string, number> = {}, defaultSalary: number = 0): Record<string, number | string> {
   switch (calculatorId) {
-    case 'salary':
-      const salaryNet = inputValue * (1 - 0.22 - locationData.stateTaxRate - 0.0765)
+    case 'salary': {
+      // Real 2024 federal brackets + FICA from the lib; state tax uses the
+      // location's own rate (the same rate shown in the info box above).
+      const r = calculateSalary({ grossSalary: inputValue, state: '', filingStatus: 'single', dependents: 0, retirement401k: 0 })
+      const stateTax = r.taxableIncome * locationData.stateTaxRate
+      const netAnnual = inputValue - (r.federalTax + stateTax + r.socialSecurity + r.medicare)
       return {
-        mainResult: salaryNet / 12,
-        secondaryResult: salaryNet,
+        mainResult: netAnnual / 12,
+        secondaryResult: netAnnual,
         secondaryLabel: 'Annual',
-        'Federal Tax': inputValue * 0.22,
-        'State Tax': inputValue * locationData.stateTaxRate,
-        'FICA': inputValue * 0.0765,
+        'Federal Tax': formatCurrency(r.federalTax, locationData.currency),
+        'State Tax': formatCurrency(stateTax, locationData.currency),
+        'FICA': formatCurrency(r.socialSecurity + r.medicare, locationData.currency),
+        'Effective Rate': formatPercent(inputValue > 0 ? ((inputValue - netAnnual) / inputValue) * 100 : 0),
       }
-    case 'tax':
-      const taxTakeHome = inputValue * (1 - 0.15 - locationData.stateTaxRate)
+    }
+    case 'tax': {
+      const r = calculateTax({ annualIncome: inputValue, state: '', filingStatus: 'single', itemizedDeductions: 0, taxCredits: 0 })
+      const stateTax = r.taxableIncome * locationData.stateTaxRate
+      const totalTax = r.federalTax + stateTax
       return {
-        mainResult: taxTakeHome,
-        'Effective Rate': (1 - taxTakeHome / inputValue) * 100,
-        'Federal Tax': inputValue * 0.15,
-        'State Tax': inputValue * locationData.stateTaxRate,
+        mainResult: inputValue - totalTax,
+        secondaryResult: totalTax,
+        secondaryLabel: 'Total Tax',
+        'Federal Tax': formatCurrency(r.federalTax, locationData.currency),
+        'State Tax': formatCurrency(stateTax, locationData.currency),
+        'Effective Rate': formatPercent(inputValue > 0 ? (totalTax / inputValue) * 100 : 0),
       }
-    case 'mortgage':
-      const monthlyRate = 0.0065
-      const monthlyPayment = inputValue * monthlyRate * Math.pow(1 + monthlyRate, 360) / (Math.pow(1 + monthlyRate, 360) - 1)
+    }
+    case 'mortgage': {
+      const r = calculateMortgage({
+        homePrice: inputValue,
+        downPaymentPercent: 20,
+        downPaymentAmount: 0,
+        loanTerm: extras['termYears'] ?? 30,
+        interestRate: extras['rate'] ?? 7.8,
+        propertyTax: 0,
+        insurance: 0,
+        hoa: 0,
+        pmi: 0,
+      })
       return {
-        mainResult: monthlyPayment,
-        secondaryResult: monthlyPayment * 360 - inputValue,
+        mainResult: r.totalMonthlyPayment,
+        secondaryResult: r.totalInterest,
         secondaryLabel: 'Total Interest',
-        'Down Payment': inputValue * 0.20,
-        'Loan Amount': inputValue * 0.80,
+        'Principal & Interest': formatCurrency(r.monthlyPrincipalInterest, locationData.currency),
+        'Down Payment': formatCurrency(r.downPayment, locationData.currency),
+        'Loan Amount': formatCurrency(r.loanAmount, locationData.currency),
       }
-    case 'investment':
-    case 'compound-interest':
-      const futureValue = inputValue * Math.pow(1.08, 10)
+    }
+    case 'investment': {
+      const r = calculateInvestment({
+        initialInvestment: inputValue,
+        monthlyContribution: 0,
+        expectedReturn: extras['returnPct'] ?? 8,
+        years: extras['years'] ?? 10,
+        inflationRate: 0,
+      })
       return {
-        mainResult: futureValue,
-        secondaryResult: futureValue - inputValue,
+        mainResult: r.futureValue,
+        secondaryResult: r.interestEarned,
         secondaryLabel: 'Total Gain',
-        'Growth Rate': 8,
-        'Years': 10,
+        'Contributions': formatCurrency(r.totalContributions, locationData.currency),
       }
-    case 'loan':
-    case 'loan-emi':
-      const loanRate = 0.0075
-      const emi = inputValue * loanRate * Math.pow(1 + loanRate, 60) / (Math.pow(1 + loanRate, 60) - 1)
+    }
+    case 'compound-interest': {
+      const r = calculateCompoundInterest({
+        principal: inputValue,
+        annualRate: extras['rate'] ?? 8,
+        years: extras['years'] ?? 10,
+        compoundFrequency: 'annually',
+      })
       return {
-        mainResult: emi,
-        secondaryResult: emi * 60 - inputValue,
+        mainResult: r.finalBalance,
+        secondaryResult: r.totalInterest,
         secondaryLabel: 'Total Interest',
-        'Rate': 9,
-        'Term (months)': 60,
+        'Effective Rate': formatPercent(r.effectiveRate),
       }
-    case 'retirement':
-      const retirementValue = inputValue * Math.pow(1.07, 30)
+    }
+    case 'loan': {
+      const r = calculateLoan({
+        loanAmount: inputValue,
+        interestRate: extras['rate'] ?? 9,
+        loanTerm: extras['termMonths'] ?? 60,
+      })
       return {
-        mainResult: retirementValue,
-        secondaryResult: retirementValue * 0.04 / 12,
-        secondaryLabel: 'Monthly Withdrawal',
-        'Years to Retire': 30,
-        'Safe Withdrawal': 4,
+        mainResult: r.monthlyPayment,
+        secondaryResult: r.totalInterest,
+        secondaryLabel: 'Total Interest',
+        'Total Payments': formatCurrency(r.totalPayments, locationData.currency),
       }
-    case 'currency':
+    }
+    case 'loan-emi': {
+      const r = calculateLoanEMI({
+        principal: inputValue,
+        annualRate: extras['rate'] ?? 9,
+        tenureMonths: extras['tenureMonths'] ?? 60,
+      })
       return {
-        mainResult: inputValue * 0.85,
-        secondaryResult: 0.85,
-        secondaryLabel: 'Exchange Rate',
-        'Base': 'EUR',
+        mainResult: r.emi,
+        secondaryResult: r.totalInterest,
+        secondaryLabel: 'Total Interest',
+        'Total Payment': formatCurrency(r.totalPayment, locationData.currency),
+        'Interest': formatPercent(r.interestPercentage),
       }
-    case 'bmi':
-      const heightM = heightCm / 100
-      const bmi = inputValue / (heightM * heightM)
-      const category = bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese'
+    }
+    case 'retirement': {
+      const r = calculateRetirement({
+        currentAge: 35,
+        retirementAge: 65,
+        currentSavings: inputValue,
+        monthlyContribution: extras['monthlyContribution'] ?? 0,
+        expectedReturn: extras['returnPct'] ?? 7,
+        socialSecurity: 0,
+        retirementExpenses: 0,
+      })
       return {
-        mainResult: bmi,
-        'Category': category,
-        'Height (cm)': heightCm,
+        mainResult: r.projectedSavings,
+        secondaryResult: r.monthlyIncomeAtRetirement,
+        secondaryLabel: 'Monthly Income',
+        'Years to Retire': `${r.yearsToRetirement} years`,
       }
-    case 'calorie':
-      const bmr = 10 * inputValue + 6.25 * 175 - 5 * 30 + 5
+    }
+    case 'currency': {
+      // Real conversion from the lib's rate table (location currency -> USD,
+      // or -> EUR when the location already uses USD). The old code just did x0.85.
+      const target = locationData.currency === 'USD' ? 'EUR' : 'USD'
+      const r = convertCurrency({ amount: inputValue, fromCurrency: locationData.currency, toCurrency: target })
       return {
-        mainResult: bmr * 1.55,
-        secondaryResult: bmr,
-        secondaryLabel: 'BMR',
-        'Activity': 'Moderate',
+        mainResult: r.convertedAmount,
+        'Exchange Rate': `1 ${locationData.currency} = ${r.exchangeRate.toFixed(4)} ${target}`,
+        'Converted To': target,
       }
-    case 'freelance-rate':
-      const hourly = inputValue / 2080 * 1.3
+    }
+    case 'bmi': {
+      const r = calculateBMI({ weight: inputValue, height: heightCm, unit: 'metric' })
       return {
-        mainResult: hourly,
-        secondaryResult: hourly * 8,
+        mainResult: r.bmi,
+        'Category': r.category,
+        'Healthy Range': `${r.healthyWeightRange.min} – ${r.healthyWeightRange.max} kg`,
+      }
+    }
+    case 'calorie': {
+      const r = calculateCalories({ age: 30, weight: inputValue, height: heightCm, gender: 'male', activityLevel: 'moderate', goal: 'maintain' })
+      return {
+        mainResult: r.targetCalories,
+        secondaryResult: r.tdee,
+        secondaryLabel: 'TDEE',
+        'Protein': `${r.proteinGrams} g`,
+        'Carbs': `${r.carbsGrams} g`,
+        'Fat': `${r.fatGrams} g`,
+      }
+    }
+    case 'freelance-rate': {
+      // 40 billable hours x 52 weeks; the location's tax rate is now actually
+      // used (before it was only displayed, never applied).
+      const r = calculateFreelanceRate({
+        desiredAnnualIncome: inputValue,
+        billableHoursPerWeek: 40,
+        weeksPerYear: 52,
+        expenses: 0,
+        taxRate: locationData.stateTaxRate * 100,
+      })
+      return {
+        mainResult: r.hourlyRate,
+        secondaryResult: r.dailyRate,
         secondaryLabel: 'Daily Rate',
-        'Billable Hours': 1500,
+        'Billable Hours': '2,080 hours',
+        'Weekly Rate': formatCurrency(r.weeklyRate, locationData.currency),
+        'Monthly Rate': formatCurrency(r.monthlyRate, locationData.currency),
       }
-    case 'roi':
-      const roi = (inputValue * 1.15 - inputValue) / inputValue * 100
+    }
+    case 'roi': {
+      // Real ROI from lib/calculations: simple ROI + annualised (CAGR) + gain + performance.
+      // Money amounts are pre-formatted as strings so the renderer does not
+      // treat them as percentages (the old code showed Gain as "1500.00%").
+      const result = calculateROI({
+        initialInvestment: inputValue,
+        finalValue: extras['finalValue'] ?? inputValue,
+        investmentPeriod: extras['periodYears'] ?? 1,
+      })
       return {
-        mainResult: roi,
-        'Gain': inputValue * 0.15,
-        'Holding Period': '1 year',
+        mainResult: result.roi,
+        secondaryResult: result.annualizedROI,
+        secondaryLabel: 'Annualized ROI',
+        'Total Gain': formatCurrency(result.totalGain, locationData.currency),
+        'Performance': result.performance,
       }
-    case 'affiliate-commission':
-      const revenue = inputValue * 0.05 * 0.02 * 50
+    }
+    case 'affiliate-commission': {
+      // Input is monthly CLICKS; with a 5% click-through rate that means
+      // clicks / 0.05 visitors. Defaults reproduce the old 500 revenue.
+      const r = calculateAffiliate({
+        monthlyVisitors: inputValue / 0.05,
+        conversionRate: 2,
+        averageOrderValue: 50,
+        commissionRate: 5,
+        clickThroughRate: 5,
+      })
       return {
-        mainResult: revenue,
-        secondaryResult: revenue * 12,
+        mainResult: r.monthlyRevenue,
+        secondaryResult: r.annualRevenue,
         secondaryLabel: 'Annual',
-        'Conversion Rate': 2,
-        'Avg Order': 50,
+        'Monthly Clicks': formatNumber(inputValue, 0),
+        'Conversions': formatNumber(r.monthlyConversions, 0),
       }
-    case 'cost-of-living':
+    }
+    case 'cost-of-living': {
       const equivalent = inputValue * (locationData.costOfLiving / 50000)
+      const diff = equivalent - inputValue
       return {
         mainResult: equivalent,
-        secondaryResult: (equivalent / inputValue - 1) * 100,
+        secondaryResult: diff,
         secondaryLabel: 'Difference',
-        'COL Index': locationData.costOfLiving,
-        'Base': 50000,
+        'Cost of Living': formatCurrency(locationData.costOfLiving, locationData.currency),
+        'Change': formatPercent(inputValue > 0 ? (diff / inputValue) * 100 : 0),
       }
-    case 'crypto':
-      const cryptoValue = inputValue * 1.5
+    }
+    case 'crypto': {
+      // No invented prices: the visitor enters the real buy and current price
+      // per coin (defaults are equal, so gain is 0 until they change them).
+      const buy = extras['buyPrice'] ?? 100
+      const current = extras['currentPrice'] ?? 100
+      const coins = buy > 0 ? inputValue / buy : 0
+      const r = calculateCrypto({ cryptocurrency: 'bitcoin', amount: coins, purchasePrice: buy, currentPrice: current })
       return {
-        mainResult: cryptoValue,
-        secondaryResult: cryptoValue - inputValue,
+        mainResult: r.currentValue,
+        secondaryResult: r.gainOrLoss,
         secondaryLabel: 'Gain/Loss',
-        'Change': 50,
+        'Gain/Loss %': formatPercent(r.gainOrLossPercent),
+        'Est. Tax': formatCurrency(r.estimatedTax, locationData.currency),
       }
-    case 'forex':
+    }
+    case 'forex': {
+      // EUR/USD, micro lots: input / 1000 micro lots. Defaults (1.0850 -> 1.0870
+      // = 20 pips) reproduce the old profit number, now from real pip math.
+      const r = calculateForex({
+        pair: 'EUR/USD',
+        tradeSize: inputValue / 1000,
+        lotType: 'micro',
+        entryPrice: extras['entryPrice'] ?? 1.085,
+        exitPrice: extras['exitPrice'] ?? 1.087,
+        direction: 'long',
+      })
       return {
-        mainResult: inputValue * 0.002,
-        secondaryResult: 20,
-        secondaryLabel: 'Pips',
-        'Leverage': '1:100',
+        mainResult: r.profitOrLoss,
+        secondaryResult: r.marginRequired,
+        secondaryLabel: 'Margin Required',
+        'Pips': `${r.totalPips} pips`,
+        'Leverage': `1:${r.leverage}`,
       }
-    case 'contractor-income':
-      const netIncome = inputValue * (1 - 0.153 - 0.15)
+    }
+    case 'contractor-income': {
+      const r = calculateContractorIncome({
+        hourlyRate: inputValue / 2080,
+        hoursPerWeek: 40,
+        weeksPerYear: 52,
+        businessExpenses: 0,
+        healthInsurance: 0,
+        retirementContribution: 0,
+      })
       return {
-        mainResult: netIncome,
-        secondaryResult: netIncome / 2000,
-        secondaryLabel: 'Hourly Equivalent',
-        'Self-Employment Tax': 15.3,
+        mainResult: r.netIncome,
+        secondaryResult: r.monthlyIncome,
+        secondaryLabel: 'Monthly',
+        'Self-Employment Tax': formatCurrency(r.selfEmploymentTax, locationData.currency),
+        'Effective Hourly': formatCurrency(r.effectiveHourlyRate, locationData.currency),
       }
-    case 'pension':
-      const pension = inputValue * 0.02 * 75000
+    }
+    case 'pension': {
+      // Uses the role's real average salary for this location (before it was
+      // a hardcoded 75,000 for every role, everywhere).
+      const r = calculatePension({
+        currentAge: 40,
+        retirementAge: 65,
+        yearsOfService: inputValue,
+        averageSalary: defaultSalary,
+        pensionFormula: 2,
+        survivorBenefit: false,
+        COLA: false,
+      })
       return {
-        mainResult: pension / 12,
-        secondaryResult: pension,
+        mainResult: r.monthlyPension,
+        secondaryResult: r.annualPension,
         secondaryLabel: 'Annual Pension',
-        'Multiplier': 2,
-        'Avg Salary': 75000,
+        'Replacement Ratio': formatPercent(r.replacementRatio),
+        'Vesting': r.vestingStatus,
       }
-    case 'profit-margin':
-      const margin = ((inputValue - inputValue * 0.6) / inputValue) * 100
+    }
+    case 'profit-margin': {
+      const r = calculateProfitMargin({
+        revenue: inputValue,
+        cogs: inputValue * 0.6,
+        operatingExpenses: inputValue * 0.1,
+        otherExpenses: 0,
+        interestExpense: 0,
+        taxRate: locationData.stateTaxRate * 100,
+      })
       return {
-        mainResult: margin,
-        secondaryResult: inputValue * 0.4,
-        secondaryLabel: 'Gross Profit',
-        'COGS': inputValue * 0.6,
-        'Operating': inputValue * 0.1,
+        mainResult: r.netProfitMargin,
+        secondaryResult: r.grossProfitMargin,
+        secondaryLabel: 'Gross Margin',
+        'Net Income': formatCurrency(r.netIncome, locationData.currency),
+        'Gross Profit': formatCurrency(r.grossProfit, locationData.currency),
       }
+    }
     default:
       return {
         mainResult: inputValue,

@@ -195,7 +195,7 @@ export default async function CalculatorLocationRolePage({ params }: { params: P
   const HEALTH_CALCULATORS = new Set(['bmi', 'calorie'])
   const introParagraph = HEALTH_CALCULATORS.has(name)
     ? `As a ${roleData.name.toLowerCase()} in ${locationDisplay}, staying on top of your health metrics matters just as much as your career. Use our ${calculator.name.toLowerCase()} to get a clear picture of your numbers, tailored to typical lifestyle factors for ${roleData.name.toLowerCase()}s in this field.`
-    : `As a ${roleData.name.toLowerCase()} in ${locationDisplay}, understanding your financial position is crucial. The average annual salary for a ${roleData.name.toLowerCase()} in ${locationDisplay} is approximately ${formatSalary(avgSalary, locationData.currency)}, with a cost of living index that ${costOfLiving > 50000 ? 'reflects a higher cost metropolitan area' : 'offers more affordable living'}. Use our ${calculator.name.toLowerCase()} to get personalized financial projections based on your specific situation.`
+    : `As a ${roleData.name.toLowerCase()} in ${locationDisplay}, understanding your financial position is crucial. The average annual salary for a ${roleData.name.toLowerCase()} in ${locationDisplay} is approximately ${formatSalary(avgSalary, locationData.currency)}, with an estimated annual cost of living of ${formatSalary(costOfLiving, locationData.currency)} — ${costOfLiving > 50000 ? 'a higher-cost metropolitan area' : 'relatively affordable living'}. Use our ${calculator.name.toLowerCase()} to get personalized financial projections based on your specific situation.`
 
   // Generate related locations (same country, different cities)
   const relatedLocations = locations
@@ -304,7 +304,7 @@ export default async function CalculatorLocationRolePage({ params }: { params: P
                   {locationData.state && <li><strong>State/Province:</strong> {locationData.state}</li>}
                   <li><strong>Currency:</strong> {locationData.currency}</li>
                   <li><strong>State Tax Rate:</strong> {(locationData.stateTaxRate * 100).toFixed(1)}%</li>
-                  <li><strong>Cost of Living Index:</strong> {locationData.costOfLiving.toLocaleString()}</li>
+                  <li><strong>Cost of Living:</strong> {formatSalary(locationData.costOfLiving, locationData.currency)} per year (estimate)</li>
                 </ul>
                 <p className="text-gray-600 dark:text-gray-300 mt-4">
                   {locationData.stateTaxRate === 0

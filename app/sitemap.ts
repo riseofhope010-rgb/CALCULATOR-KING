@@ -1,7 +1,9 @@
 import { MetadataRoute } from 'next'
+import locationsData from '@/data/locations.json'
+import rolesData from '@/data/roles.json'
 
-// Phase 1: Only submit core calculator pages to Google.
-// Once these rank, we'll add location/role pages in batches (Phase 2).
+// Phase 2: Google already crawled and indexed ~10K location/role pages, so the
+// sitemap now lists the full site — every hub, location and role page.
 const CALCULATORS = [
   { id: 'salary',               priority: 0.9 },
   { id: 'tax',                  priority: 0.9 },
@@ -25,11 +27,14 @@ const CALCULATORS = [
   { id: 'profit-margin',        priority: 0.6 },
 ]
 
+const locations = locationsData as { id: string }[]
+const roles = rolesData as { id: string }[]
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://calculatorking.vercel.app'
   const now = new Date()
 
-  return [
+  const entries: MetadataRoute.Sitemap = [
     // Homepage — highest priority
     {
       url: baseUrl,
@@ -44,7 +49,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily',
       priority: 0.95,
     },
-    // 20 core calculator pages only
+    // 20 core calculator hub pages
     ...CALCULATORS.map(calc => ({
       url: `${baseUrl}/calculators/${calc.id}`,
       lastModified: now,
@@ -52,4 +57,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: calc.priority,
     })),
   ]
+
+  // Location pages (20 calculators x 75 locations) + role pages
+  // (20 x 75 x 15) — the pages Google is already indexing.
+  for (const calc of CALCULATORS) {
+    for (const location of locations) {
+      entries.push({
+        url: `${baseUrl}/calculators/${calc.id}/${location.id}`,
+        lastModified: now,
+        changeFrequency: 'weekly' as const,
+        priority: 0.6,
+      })
+      for (const role of roles) {
+        entries.push({
+          url: `${baseUrl}/calculators/${calc.id}/${location.id}/${role.id}`,
+          lastModified: now,
+          changeFrequency: 'monthly' as const,
+          priority: 0.5,
+        })
+      }
+    }
+  }
+
+  return entries
 }
