@@ -97,7 +97,23 @@ export async function generateMetadata({ params }: { params: Promise<PageParams>
     : `${locationData.name}, ${locationData.country}`
 
   const title = `${roleData.name} ${calculator.name} in ${locationDisplay} | CalculatorKing`
-  const description = `Calculate ${roleData.name.toLowerCase()} earnings and financial projections in ${locationDisplay}. Get accurate ${calculator.name.toLowerCase()} results tailored for ${roleData.name.toLowerCase()}s with ${roleData.avgExperience} experience.`
+  let description = `Calculate ${roleData.name.toLowerCase()} earnings and financial projections in ${locationDisplay}. Get accurate ${calculator.name.toLowerCase()} results tailored for ${roleData.name.toLowerCase()}s with ${roleData.avgExperience} experience.`
+
+  // Salary pages: put the real figure in the snippet so searchers see the
+  // number before they click. Titles stay untouched.
+  if (name === 'salary') {
+    const salary = locationData.salaries?.[role]
+    if (salary) {
+      const figure = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: locationData.currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(salary)
+      const taxNote = locationData.country === 'USA' ? 'after federal and state tax' : 'after local tax'
+      description = `${roleData.name} salary in ${locationDisplay}: ${figure}/year. Calculate take-home pay ${taxNote}.`
+    }
+  }
 
   return {
     title,

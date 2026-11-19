@@ -28,6 +28,17 @@ const CALCULATORS = [
 
 const locations = locationsData as LocationData[]
 
+// Role pages that already earn impressions — linked from the calculator hub
+// so the hub's clicks flow to them (ROI is the site's only click-winner).
+const POPULAR_ROLE_PAGES: Record<string, { href: string; label: string }[]> = {
+  roi: [
+    { href: '/calculators/roi/istanbul/mechanic', label: 'Mechanic ROI in Istanbul' },
+    { href: '/calculators/roi/istanbul/plumber', label: 'Plumber ROI in Istanbul' },
+    { href: '/calculators/roi/bangkok/mechanic', label: 'Mechanic ROI in Bangkok' },
+    { href: '/calculators/roi/bangkok/plumber', label: 'Plumber ROI in Bangkok' },
+  ],
+}
+
 interface LocationData {
   id: string
   name: string
@@ -173,6 +184,27 @@ export default async function CalculatorNamePage({ params }: { params: Promise<P
             ))}
           </div>
         </section>
+
+        {POPULAR_ROLE_PAGES[name] && (
+          <section className="py-12">
+            <div className="max-w-7xl mx-auto px-4">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                Popular Calculations
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {POPULAR_ROLE_PAGES[name].map(page => (
+                  <Link
+                    key={page.href}
+                    href={page.href}
+                    className="block bg-white dark:bg-gray-800 rounded-lg p-4 text-center hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
+                  >
+                    <span className="text-primary text-sm font-medium">{page.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         <section className="py-12 bg-gray-100 dark:bg-gray-800">
           <div className="max-w-7xl mx-auto px-4">
